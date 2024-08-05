@@ -21,7 +21,7 @@ export function ThemeWrapper({
     ])
   )
 
-  console.log(inlineStyles)
+  // console.log(inlineStyles)
 
   return (
     <div

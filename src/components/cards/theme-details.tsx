@@ -15,6 +15,17 @@ import { ColorPicker } from '../color-picker'
 export function CardsThemeDetails() {
   const [config] = useConfig()
 
+  const data = [
+    'primary',
+    'secondary',
+    'accent',
+    'background',
+    'foreground',
+    'card',
+    'muted',
+    'destructive',
+  ]
+
   return (
     <Card>
       <CardHeader>
@@ -27,13 +38,22 @@ export function CardsThemeDetails() {
         <pre className='max-h-[300px] overflow-y-scroll'>
           {JSON.stringify(config, undefined, 2)}
         </pre>
-        <div className='rounded-lg shadow-sm ring-1 ring-border'>
-          <div className='flex items-center p-2 pb-0'>
-            <div className='flex-1 pl-1 text-sm font-medium'>
-              <h2 className='capitalize'>Primary</h2>
+        <div className='flex flex-wrap gap-y-4'>
+          {data.map((color) => (
+            <div
+              key={color}
+              className='flex flex-1 flex-col items-center space-y-2 basis-28 shrink-0'
+            >
+              <div
+                className={`rounded-full h-20 w-20 flex items-center justify-center bg-${color} text-${color}-foreground shadow-lg`}
+              >
+                <p className='capitalize text-2xl font-bold'>
+                  {color.slice(0, 1)}
+                </p>
+              </div>
+              <p className='capitalize text-sm font-medium'>{color}</p>
             </div>
-          </div>
-          <div className='flex flex-col gap-1 p-2 sm:flex-row sm:gap-2'></div>
+          ))}
         </div>
       </CardContent>
       <CardFooter>
