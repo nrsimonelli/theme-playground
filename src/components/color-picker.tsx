@@ -4,9 +4,9 @@ import { Slider } from '@/components/ui/slider'
 import { useConfig } from '@/lib/hooks/use-config'
 import { cn } from '@/lib/utils'
 import { useTheme } from 'next-themes'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-export const ColorPicker = () => {
+export const ColorPicker = ({ selectedToken }: { selectedToken: string }) => {
   const [config, setConfig] = useConfig()
   const { theme: mode } = useTheme()
 
@@ -18,6 +18,18 @@ export const ColorPicker = () => {
     lightness: Math.floor(Math.random() * 100),
   }))
 
+  useEffect(() => {
+    if (selectedToken) {
+      const [hue, saturation, lightness] =
+        config.currentTheme.cssVars[activeMode][selectedToken].split(' ')
+      setHsl({
+        hue: parseInt(hue),
+        saturation: parseInt(saturation.replace('%', '')),
+        lightness: parseInt(lightness.replace('%', '')),
+      })
+    }
+  }, [selectedToken, activeMode, config.currentTheme.cssVars])
+
   const handleSliderCommit = () => {
     const currentColor = `${hsl.hue} ${hsl.saturation}% ${hsl.lightness}%`
 
@@ -28,15 +40,24 @@ export const ColorPicker = () => {
         name: 'custom',
         label: 'Custom',
         activeColor: {
-          light: currentColor,
-          dark: currentColor,
+          light:
+            selectedToken === 'primary'
+              ? currentColor
+              : config.currentTheme.activeColor.light,
+          dark:
+            selectedToken === 'primary'
+              ? currentColor
+              : config.currentTheme.activeColor.dark,
         },
         cssVars: {
           ...config.currentTheme.cssVars,
           [activeMode]: {
             ...config.currentTheme.cssVars[activeMode],
-            primary: currentColor,
-            ring: currentColor,
+            [selectedToken]: currentColor,
+            ring:
+              selectedToken === 'primary'
+                ? currentColor
+                : config.currentTheme.cssVars[activeMode].ring,
           },
         },
       },
@@ -50,10 +71,10 @@ export const ColorPicker = () => {
           style={{
             background: `hsl(${hsl.hue}deg ${hsl.saturation}% ${hsl.lightness}%)`,
           }}
-          className={cn(`h-full w-full rounded-lg`)}
+          className={'h-full w-full rounded-lg shadow-md'}
         ></div>
       </div>
-      <div className='flex flex-1 flex-col space-y-2'>
+      <div className='flex flex-1 flex-col space-y-2 py-2 justify-center items-center'>
         <div className={'space-y-2 w-full'}>
           <div className='inline-flex justify-between w-full'>
             <p>Hue</p>
